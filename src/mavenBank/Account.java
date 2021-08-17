@@ -6,7 +6,19 @@ public class Account {
     private long accountNumber;
     private AccountType typeOfAccount;
     private String pin;
-    private BigDecimal balance;
+    private BigDecimal balance = BigDecimal.ZERO;
+
+    public Account(long accountNumber, AccountType typeOfAccount) {
+        this.accountNumber = accountNumber;
+        this.typeOfAccount = typeOfAccount;
+    }
+    public Account(long accountNumber, AccountType typeOfAccount, BigDecimal balance) {
+        this.accountNumber = accountNumber;
+        this.typeOfAccount = typeOfAccount;
+        this.balance = balance;
+    }
+    public Account(){
+    }
 
     public long getAccountNumber() {
         return accountNumber;
@@ -39,4 +51,5 @@ public class Account {
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
+
 }
