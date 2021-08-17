@@ -181,17 +181,13 @@ class AccountServiceImplTest {
             ex.printStackTrace();
         }
     }
-//    @Test
-//    void depositWithInvalidAccountNumberShouldNotDeposit(){
-//        try {
-//            Account abuSavingsAccount = accountService.findAccount(1000110001);
-//            assertEquals(BigDecimal.ZERO, abuSavingsAccount.getBalance());
-//            BigDecimal depositAmount = new BigDecimal("10000000000000");
-//
-//            assertNull(accountService.deposit(depositAmount, 1000110006));
-//            assertEquals(BigDecimal.ZERO, depositAmount);
-//        }catch (MavenBankException ex){
-//            ex.printStackTrace();
-//        }
-//    }
+    @Test
+    void depositWithInvalidAccountNumberShouldNotDeposit(){
+        try {
+            Account newAccount = accountService.findAccount(1000110005);
+            assertNull(newAccount);
+        }catch (MavenBankException ex){
+            ex.printStackTrace();
+        }
+    }
 }
