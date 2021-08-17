@@ -1,6 +1,7 @@
 package mavenBank;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Customer {
     private long BVN;
@@ -9,9 +10,9 @@ public class Customer {
     private String email;
     private String phone;
     private String password;
-    private ArrayList<Account> accounts = new ArrayList<>();
+    private List<Account> accounts = new ArrayList<>();
 
-    public ArrayList<Account> getAccounts() {
+    public List<Account> getAccounts() {
         return accounts;
     }
 
