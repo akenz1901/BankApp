@@ -1,8 +1,8 @@
 package mavenBank.DataStore.services;
 
 public class BankService {
-    private static long currentBVN = 0;
-    private static long currentAccountNumber = 0;
+    private static long currentBVN = 2;
+    private static long currentAccountNumber = 1000110003;
 
     private static void setCurrentBVN(long currentBVN) {
         BankService.currentBVN = currentBVN;
@@ -27,5 +27,10 @@ public class BankService {
     public static long generateAccountNumber(){
         currentAccountNumber++;
         return currentAccountNumber;
+    }
+
+    public static void tearDown() {
+        currentAccountNumber = 1000110003;
+        currentBVN = 2;
     }
 }
