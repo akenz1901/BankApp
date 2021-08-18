@@ -1,9 +1,8 @@
 package mavenBank.DataStore;
 
-import mavenBank.Account;
-import mavenBank.AccountType;
-import mavenBank.Customer;
-import mavenBank.DataStore.services.BankService;
+import Entities.Account;
+import Entities.AccountType;
+import Entities.Customer;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -25,7 +24,7 @@ public class CustomerRepo {
 //    }
     static {
         setUp();
-}
+    }
 
     public static void setUp(){
         Customer joshua = new Customer();
@@ -36,6 +35,7 @@ public class CustomerRepo {
         joshua.setPhone("08183563309");
         joshua.setPassword("1248489284749");
         Account joshuaSavingsAccount = new Account(1000110001, AccountType.SAVINGS);
+        joshuaSavingsAccount.setPin("1111");
         joshua.getAccounts().add(joshuaSavingsAccount);
 
         Account joshuaCurrentAccount = new Account(1000110002, AccountType.CURRENT, new BigDecimal(500000000));
@@ -50,6 +50,7 @@ public class CustomerRepo {
         judas.setPhone("08183563309");
         judas.setPassword("1248489284749");
         Account judasSavingsAccount = new Account(1000110003, AccountType.SAVINGS);
+        judasSavingsAccount.setPin("1234");
         judas.getAccounts().add(judasSavingsAccount);
         customers.put(judas.getBVN(), judas);
 
