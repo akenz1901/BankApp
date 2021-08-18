@@ -1,18 +1,18 @@
 package mavenBank.Exceptions;
 
-public class MavenBankInsuffiencientAmountException extends MavenBankTransactionException{
-    public MavenBankInsuffiencientAmountException() {
+public class MavenBankInsufficientAmountException extends MavenBankTransactionException{
+    public MavenBankInsufficientAmountException() {
     }
 
-    public MavenBankInsuffiencientAmountException(String message) {
+    public MavenBankInsufficientAmountException(String message) {
         super(message);
     }
 
-    public MavenBankInsuffiencientAmountException(String message, Throwable cause) {
+    public MavenBankInsufficientAmountException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public MavenBankInsuffiencientAmountException(Throwable cause) {
+    public MavenBankInsufficientAmountException(Throwable cause) {
         super(cause);
     }
 }
