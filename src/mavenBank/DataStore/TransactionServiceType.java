@@ -1,4 +1,4 @@
-package mavenBank.DataStore.services;
+package mavenBank.DataStore;
 
 public enum TransactionServiceType {
     DEPOSIT(), WITHDRAW();
