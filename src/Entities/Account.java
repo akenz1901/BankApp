@@ -1,23 +1,19 @@
-package mavenBank;
+package Entities;
 
 import java.math.BigDecimal;
 
-public class Account {
+public abstract class Account {
     private long accountNumber;
-    private AccountType typeOfAccount;
     private String pin;
     private BigDecimal balance = BigDecimal.ZERO;
+    private Loan accountLoan;
 
-    public Account(long accountNumber, AccountType typeOfAccount) {
-        this.accountNumber = accountNumber;
-        this.typeOfAccount = typeOfAccount;
+    public Loan getAccountLoan() {
+        return accountLoan;
     }
-    public Account(long accountNumber, AccountType typeOfAccount, BigDecimal balance) {
-        this.accountNumber = accountNumber;
-        this.typeOfAccount = typeOfAccount;
-        this.balance = balance;
-    }
-    public Account(){
+
+    public void setAccountLoan(Loan accountLoan) {
+        this.accountLoan = accountLoan;
     }
 
     public long getAccountNumber() {
@@ -26,14 +22,6 @@ public class Account {
 
     public void setAccountNumber(long accountNumber) {
         this.accountNumber = accountNumber;
-    }
-
-    public AccountType getTypeOfAccount() {
-        return typeOfAccount;
-    }
-
-    public void setTypeOfAccount(AccountType typeOfAccount) {
-        this.typeOfAccount = typeOfAccount;
     }
 
     public String getPin() {
