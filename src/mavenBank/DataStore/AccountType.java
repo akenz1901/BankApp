@@ -1,5 +1,5 @@
-package Entities;
+package mavenBank.DataStore;
 
 public enum AccountType {
-    CURRENT, SAVINGS;
+    CURRENTACCOUNT, SAVINGSACCOUNT;
 }
