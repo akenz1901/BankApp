@@ -1,5 +1,7 @@
 package mavenBank;
 
+import Entities.Customer;
+import Entities.SavingsAccount;
 import mavenBank.DataStore.CustomerRepo;
 import mavenBank.DataStore.services.BankService;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,11 +12,11 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AccountTest {
-    Account joshuaAccount;
+    SavingsAccount joshuaAccount;
     Customer joshua;
     @BeforeEach
     void setUp () {
-        joshuaAccount = new Account();
+        joshuaAccount = new SavingsAccount();
         joshua = new Customer();
     }
     @Test
@@ -27,7 +29,6 @@ public class AccountTest {
         joshua.setPassword("1248489284749");
 
         joshuaAccount.setAccountNumber(BankService.generateAccountNumber());
-        joshuaAccount.setTypeOfAccount(AccountType.SAVINGS);
         joshuaAccount.setBalance( new BigDecimal(5000));
         joshua.getAccounts().add(joshuaAccount);
 
