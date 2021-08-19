@@ -1,5 +1,5 @@
 package mavenBank.DataStore;
 
 public enum LoanStatus {
-    PENDING, ACTIVE, DECLINED, DEFAULT, CLOSED, NEW, APPROVED;
+     ACTIVE, CLOSED,NON_PERFORMING;
 }
