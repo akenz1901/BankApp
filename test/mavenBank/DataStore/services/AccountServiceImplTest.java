@@ -1,13 +1,11 @@
 package mavenBank.DataStore.services;
 
 import Entities.Account;
-import Entities.Loan;
-import mavenBank.DataStore.LoanStatus;
-import mavenBank.DataStore.LoanType;
+import Entities.BankTransaction;
+import Entities.LoanRequest;
+import mavenBank.DataStore.*;
 import mavenBank.Exceptions.MavenBankException;
-import mavenBank.DataStore.AccountType;
 import Entities.Customer;
-import mavenBank.DataStore.CustomerRepo;
 import mavenBank.Exceptions.MavenBankInsufficientAmountException;
 import mavenBank.Exceptions.MavenBankTransactionException;
 import org.junit.jupiter.api.AfterEach;
@@ -269,23 +267,103 @@ class AccountServiceImplTest {
     }
     @Test
     void applyForLoan(){
-        Loan joshuaLoan = new Loan();
-        joshuaLoan.setApplyDate(LocalDate.now());
-        joshuaLoan.setAmount(BigDecimal.valueOf(50000000));
-        joshuaLoan.setInterest(0.1);
-        joshuaLoan.setStatus(LoanStatus.NEW);
-        joshuaLoan.setTenor(24);
-        joshuaLoan.setTypeOfLoan(LoanType.SME);
+        LoanRequest joshuaLoanRequest = new LoanRequest();
+        joshuaLoanRequest.setApplyDate(LocalDate.now());
+        joshuaLoanRequest.setAmount(BigDecimal.valueOf(50000000));
+        joshuaLoanRequest.setInterest(0.1);
+        joshuaLoanRequest.setStatus(LoanRequestStatus.NEW);
+        joshuaLoanRequest.setTenor(24);
+        joshuaLoanRequest.setTypeOfLoan(LoanType.SME);
 
         try {
             Account joshuaCurrentAccount = accountService.findAccount(1000110002);
-            assertNull(joshuaCurrentAccount.getAccountLoan());
-            joshuaCurrentAccount.setAccountLoan(joshuaLoan);//FICO
-            assertNotNull(joshuaCurrentAccount.getAccountLoan());
+            assertNull(joshuaCurrentAccount.getAccountLoanRequest());
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);//FICO
+            assertNotNull(joshuaCurrentAccount.getAccountLoanRequest());
 
         }catch(MavenBankTransactionException ex){
             ex.printStackTrace();
     }catch (MavenBankException ex){
+            ex.printStackTrace();
+        }
+    }
+    @Test
+    void addBankTransactionWithNullTransaction(){
+        assertThrows(MavenBankTransactionException.class, ()-> accountService.addBankTransaction(null, abuAccount));
+    }
+    @Test
+    void addBankTransactionWithNullAccount(){
+        BankTransaction transaction = new BankTransaction(BankTransactionType.DEPOSIT, BigDecimal.valueOf(10));
+        assertThrows(MavenBankTransactionException.class, ()-> accountService.addBankTransaction(transaction, null));
+    }
+    @Test
+    void addBankTransactionWithDeposit() {
+        try {
+            Account judasSavingsAccount = accountService.findAccount(1000110003);
+            assertNotNull(judasSavingsAccount);
+            assertEquals(BigDecimal.ZERO, judasSavingsAccount.getBalance());
+            assertEquals(0, judasSavingsAccount.getTransactions().size());
+            BankTransaction janeDeposit = new BankTransaction(BankTransactionType.DEPOSIT, BigDecimal.valueOf(10000));
+            accountService.addBankTransaction(janeDeposit, judasSavingsAccount);
+            assertEquals(BigDecimal.valueOf(10000), judasSavingsAccount.getBalance());
+            assertEquals(1, judasSavingsAccount.getTransactions().size());
+        } catch (MavenBankException ex) {
+            ex.printStackTrace();
+        }
+    }
+    @Test
+    void addBankTransactionWithNegativeDeposit(){
+        try {
+            Account judasSavingsAccount = accountService.findAccount(1000110003);
+            assertNotNull(judasSavingsAccount);
+            assertEquals(BigDecimal.ZERO, judasSavingsAccount.getBalance());
+            assertEquals(0, judasSavingsAccount.getTransactions().size());
+
+            BankTransaction janeDeposit = new BankTransaction(BankTransactionType.DEPOSIT, BigDecimal.valueOf(-10000));
+            assertThrows(MavenBankTransactionException.class, ()-> accountService.addBankTransaction(janeDeposit, judasSavingsAccount));
+            assertEquals(BigDecimal.ZERO, judasSavingsAccount.getBalance());
+            assertEquals(0, judasSavingsAccount.getTransactions().size());
+        }catch (MavenBankException ex){
+            ex.printStackTrace();
+
+        }
+    }
+    @Test
+    void addBankTransactionForWithdrawal(){
+        try{
+            Account janeSavingsAccount = accountService.findAccount(1000110003);
+            assertNotNull(janeSavingsAccount);
+            BankTransaction depositTx = new BankTransaction(BankTransactionType.DEPOSIT, BigDecimal.valueOf(50000));
+            accountService.addBankTransaction(depositTx, janeSavingsAccount);
+            assertEquals(BigDecimal.valueOf(50000), janeSavingsAccount.getBalance());
+            assertEquals(1, janeSavingsAccount.getTransactions().size());
+
+            BankTransaction withdrawTx = new BankTransaction(BankTransactionType.WITHDRAW, BigDecimal.valueOf(20000));
+            accountService.addBankTransaction(withdrawTx, janeSavingsAccount);
+            assertEquals(BigDecimal.valueOf(30000), janeSavingsAccount.getBalance());
+            assertEquals(2, janeSavingsAccount.getTransactions().size());
+        }catch (MavenBankException exception){
+            exception.printStackTrace();
+        }
+    }
+    @Test
+    void addBankTransactionWithNegativeWithdrawal(){
+        try{
+            Account judasSavingsAccount = accountService.findAccount(1000110003);
+            assertNotNull(judasSavingsAccount);
+            assertEquals(BigDecimal.ZERO, judasSavingsAccount.getBalance());
+            assertEquals(0, judasSavingsAccount.getTransactions().size());
+
+            BankTransaction depositTx = new BankTransaction(BankTransactionType.DEPOSIT, BigDecimal.valueOf(50000));
+            accountService.addBankTransaction(depositTx, judasSavingsAccount);
+            assertEquals(BigDecimal.valueOf(50000), judasSavingsAccount.getBalance());
+            assertEquals(1, judasSavingsAccount.getTransactions().size());
+
+            BankTransaction withdrawTx = new BankTransaction(BankTransactionType.WITHDRAW, BigDecimal.valueOf(-20000));
+            assertThrows(MavenBankTransactionException.class, ()->accountService.addBankTransaction(withdrawTx, judasSavingsAccount));
+            assertEquals(BigDecimal.valueOf(50000), judasSavingsAccount.getBalance());
+            assertEquals(1, judasSavingsAccount.getTransactions().size());
+        }catch (MavenBankException ex){
             ex.printStackTrace();
         }
     }

@@ -3,24 +3,24 @@ package mavenBank.DataStore.services;
 import Entities.Account;
 import Entities.CurrentAccount;
 import Entities.Customer;
-import Entities.Loan;
-import mavenBank.DataStore.LoanStatus;
+import Entities.LoanRequest;
+import mavenBank.DataStore.CustomerRepo;
+import mavenBank.DataStore.LoanRequestStatus;
 import mavenBank.DataStore.LoanType;
 import mavenBank.Exceptions.MavenBankException;
 import mavenBank.Exceptions.MavenBankLoanException;
-import mavenBank.Exceptions.MavenBankTransactionException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class LoanServiceImplTest {
-    Loan joshuaLoan;
-    Loan judasLoan;
+    LoanRequest joshuaLoanRequest;
     private AccountService accountService;
     private LoanService loanService;
     CurrentAccount abeebCurrent;
@@ -31,21 +31,12 @@ class LoanServiceImplTest {
         accountService = new AccountServiceImpl();
         abeebCurrent = new CurrentAccount();
 
-        joshuaLoan = new Loan();
-        joshuaLoan.setApplyDate(LocalDate.now());
-        joshuaLoan.setAmount(BigDecimal.valueOf(9000000));
-        joshuaLoan.setInterest(0.1);
-        joshuaLoan.setStatus(LoanStatus.NEW);
-        joshuaLoan.setTenor(24);
-        joshuaLoan.setTypeOfLoan(LoanType.SME);
-
-        judasLoan = new Loan();
-        judasLoan.setApplyDate(LocalDate.now());
-        judasLoan.setAmount(BigDecimal.valueOf(9000000));
-        judasLoan.setInterest(0.1);
-        judasLoan.setStatus(LoanStatus.NEW);
-        judasLoan.setTenor(24);
-        judasLoan.setTypeOfLoan(LoanType.SME);
+        joshuaLoanRequest = new LoanRequest();
+        joshuaLoanRequest.setApplyDate(LocalDate.now());
+        joshuaLoanRequest.setInterest(0.1);
+        joshuaLoanRequest.setStatus(LoanRequestStatus.NEW);
+        joshuaLoanRequest.setTenor(24);
+        joshuaLoanRequest.setTypeOfLoan(LoanType.SME);
     }
 
     @AfterEach
@@ -53,46 +44,72 @@ class LoanServiceImplTest {
     }
 
     @Test
-    void approveLoanWithAccountBalance(){
+    void approveLoanRequestWithAccountBalance(){
         try {
             Account joshuaCurrentAccount = accountService.findAccount(1000110002);
-            assertNull(joshuaCurrentAccount.getAccountLoan());
-            joshuaCurrentAccount.setAccountLoan(joshuaLoan);//FICO
-            assertNotNull(joshuaCurrentAccount.getAccountLoan());
+            assertNull(joshuaCurrentAccount.getAccountLoanRequest());
+            joshuaLoanRequest.setAmount(BigDecimal.valueOf(9000000));
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);//FICO
+            assertNotNull(joshuaCurrentAccount.getAccountLoanRequest());
 
-            Loan processedLoan = loanService.approveLoan(joshuaCurrentAccount);
-            assertNotNull(processedLoan);
-            assertEquals(LoanStatus.APPROVED, processedLoan.getStatus());
+            LoanRequest processedLoanRequest = loanService.approveLoanRequest(joshuaCurrentAccount);
+            assertNotNull(processedLoanRequest);
+            assertEquals(LoanRequestStatus.APPROVED, processedLoanRequest.getStatus());
 
         }catch (MavenBankException ex){
             ex.printStackTrace();
         }
     }
     @Test
-    void approveLoanWithNullAccount(){
-        assertThrows(MavenBankLoanException.class, ()-> loanService.approveLoan(null));
+    void approveLoanRequestWithNullAccount(){
+        assertThrows(MavenBankLoanException.class, ()-> loanService.approveLoanRequest(null));
     }
     @Test
-    void approveLoanWithNullLoan(){
+    void approveLoanRequestWithNullLoan(){
 
-        assertThrows(MavenBankLoanException.class, ()->loanService.approveLoan(abeebCurrent));
+        assertThrows(MavenBankLoanException.class, ()->loanService.approveLoanRequest(abeebCurrent));
     }
     @Test
-    void approveLoanWithCustomerEngagement(){
+    void approveLoanRequestWithCustomerEngagement(){
         try {
             Account judaCurrentAccount = accountService.findAccount(1000110003);
-            judaCurrentAccount.setAccountLoan(joshuaLoan);
+            judaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
         }catch(MavenBankException accountCanBeFoundException){
             accountCanBeFoundException.printStackTrace();
         }
     }
     @Test
-    void approveLoanWithCustomerRelationWithLengthOfRelationship(){
+    void approveLoanWithCustomerRelationWithLengthOfRelationshipAndTransactionVolume(){
         try {
-            Account joshuaCurrentAccount = accountService.findAccount(1000110001);
-            System.out.println(joshuaCurrentAccount.getStartDate());
+            Account joshuaSavingsAccount = accountService.findAccount(1000110001);
+            Optional<Customer> optionalCustomer = CustomerRepo.getCustomers().values().stream().findFirst();
+            Customer joshua = optionalCustomer.isPresent() ? optionalCustomer.get() : null;
+            assertNotNull(joshua);
+            joshua.setRelationshipStartDate(joshuaSavingsAccount.getStartDate().minusYears(2));
+            assertEquals(BigDecimal.valueOf(450000), joshuaSavingsAccount.getBalance());
+            joshuaLoanRequest.setAmount(BigDecimal.valueOf(3000000));
+            joshuaSavingsAccount.setAccountLoanRequest(joshuaLoanRequest);
+            LoanRequest decision = loanService.approveLoanRequest(joshua, joshuaSavingsAccount);
+            assertEquals(LoanRequestStatus.APPROVED, joshuaLoanRequest.getStatus());
         }catch(MavenBankException accountCanBeFoundException){
             accountCanBeFoundException.printStackTrace();
+        }
+    }
+    @Test
+    void approveLoanRequestWithAccountBalanceAndHighLoanRequestAmount(){
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            assertNull(joshuaCurrentAccount.getAccountLoanRequest());
+            joshuaLoanRequest.setAmount(BigDecimal.valueOf(90000000));
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);//FICO
+            assertNotNull(joshuaCurrentAccount.getAccountLoanRequest());
+
+            LoanRequest processedLoanRequest = loanService.approveLoanRequest(joshuaCurrentAccount);
+            assertNotNull(processedLoanRequest);
+            assertEquals(LoanRequestStatus.PENDING, processedLoanRequest.getStatus());
+
+        }catch (MavenBankException ex){
+            ex.printStackTrace();
         }
     }
 }
