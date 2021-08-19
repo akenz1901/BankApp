@@ -2,6 +2,7 @@ package mavenBank.DataStore.services;
 
 import Entities.*;
 import mavenBank.DataStore.AccountType;
+import mavenBank.DataStore.BankTransactionType;
 import mavenBank.DataStore.CustomerRepo;
 import mavenBank.DataStore.LoanStatus;
 import mavenBank.Exceptions.MavenBankException;
@@ -114,6 +115,20 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public LoanStatus applyForLoan() {
      return null;
+    }
+
+    @Override
+    public void addBankTransaction(BankTransaction transaction, Account account) throws MavenBankException {
+        if(transaction == null || account == null){
+            throw new MavenBankTransactionException("Transaction and Account required");
+        }
+        if(transaction.getType() == BankTransactionType.DEPOSIT){
+            deposit(transaction.getAmount(), account.getAccountNumber());
+        }
+        else if (transaction.getType() == BankTransactionType.WITHDRAW){
+            withdraw(transaction.getAmount(), account.getAccountNumber());
+        }
+        account.getTransactions().add(transaction);
     }
 
     public void checkForSufficientBalance(BigDecimal amount, Account account) throws MavenBankInsufficientAmountException {

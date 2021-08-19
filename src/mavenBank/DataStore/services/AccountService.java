@@ -1,10 +1,12 @@
 package mavenBank.DataStore.services;
 
 import Entities.Account;
+import Entities.BankTransaction;
 import mavenBank.DataStore.AccountType;
 import Entities.Customer;
 import mavenBank.DataStore.LoanStatus;
 import mavenBank.Exceptions.MavenBankException;
+
 
 import java.math.BigDecimal;
 
@@ -21,4 +23,5 @@ public interface AccountService {
     BigDecimal withdraw(BigDecimal decimal, long accountNumber) throws MavenBankException;
     void applyForOverdraft(Account account);
     LoanStatus applyForLoan();
+    void addBankTransaction(BankTransaction transaction, Account account) throws MavenBankException;
 }
