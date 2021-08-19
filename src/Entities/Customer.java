@@ -1,5 +1,6 @@
 package Entities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,10 +11,19 @@ public class Customer {
     private String email;
     private String phone;
     private String password;
+    private LocalDateTime relationshipStartDate;
     private List<Account> accounts = new ArrayList<>();
 
     public List<Account> getAccounts() {
         return accounts;
+    }
+
+    public LocalDateTime getRelationshipStartDate() {
+        return relationshipStartDate;
+    }
+
+    public void setRelationshipStartDate(LocalDateTime relationshipStartDate) {
+        this.relationshipStartDate = relationshipStartDate;
     }
 
     private void setAccounts(ArrayList<Account> accounts) {
