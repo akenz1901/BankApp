@@ -1,4 +1,4 @@
-package mavenBank.DataStore.services;
+package mavenBank.engines;
 
 import Entities.Account;
 import Entities.Customer;
@@ -7,6 +7,9 @@ import Entities.SavingsAccount;
 import mavenBank.DataStore.CustomerRepo;
 import mavenBank.DataStore.LoanRequestStatus;
 import mavenBank.DataStore.LoanType;
+import mavenBank.DataStore.services.AccountService;
+import mavenBank.DataStore.services.AccountServiceImpl;
+import mavenBank.DataStore.services.BankService;
 import mavenBank.Exceptions.MavenBankException;
 import mavenBank.Exceptions.MavenBankLoanException;
 import mavenBank.engines.LoanEngine;
@@ -51,7 +54,7 @@ public class LoanEngineByBalanceTest {
     }
 
     @Test
-    void calculateAmountAutoApprove(){
+    void calculateAmountAutoApproveWithNegative(){
         try {
             Account joshuaCurrentAccount = accountService.findAccount(1000110002);
             joshuaCurrentAccount.setBalance(BigDecimal.valueOf(-900000));
@@ -59,6 +62,18 @@ public class LoanEngineByBalanceTest {
             joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
             BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
             assertEquals(0, amountApproved.intValue());
+        }catch (MavenBankException e){
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void calculateAmountAutoApprove(){
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaLoanRequest.setAmount(BigDecimal.valueOf(9000000));
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(10090000, amountApproved.intValue());
         }catch (MavenBankException e){
             e.printStackTrace();
         }
