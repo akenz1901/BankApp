@@ -18,13 +18,13 @@ public class LoanServiceImpl implements LoanService{
 
         return theLoanRequest;
     }
-    public void validateLoanRequest(Customer customer, Account accountSeekingLoan)throws MavenBankLoanException{
+    private void validateLoanRequest(Customer customer, Account accountSeekingLoan)throws MavenBankLoanException{
         if (customer == null){
             throw new MavenBankLoanException("No Customer provided for loan request");
         }
        validateLoanRequest(accountSeekingLoan);
     }
-    public void validateLoanRequest(Account accountSeekingLoan)throws MavenBankLoanException{
+    private void validateLoanRequest(Account accountSeekingLoan)throws MavenBankLoanException{
         if(accountSeekingLoan == null){
             throw new MavenBankLoanException("An account is required for processing");
         }if(accountSeekingLoan.getAccountLoanRequest() == null){
