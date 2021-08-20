@@ -104,7 +104,7 @@ public class AccountServiceImpl implements AccountService{
         }
 
         BigDecimal newBalance = debitAccount(amount, accountNumber);
-        return newBalance;
+        return amount;
     }
 
     @Override

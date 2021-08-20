@@ -41,6 +41,8 @@ class LoanServiceImplTest {
 
     @AfterEach
     void tearDown() {
+        BankService.tearDown();
+        CustomerRepo.setUp();
     }
 
     @Test
@@ -79,7 +81,7 @@ class LoanServiceImplTest {
         }
     }
     @Test
-    void approveLoanWithCustomerRelationWithLengthOfRelationshipAndTransactionVolume(){
+    void approveLoanWithCustomerRelationWithTotalVolume(){
         try {
             Account joshuaSavingsAccount = accountService.findAccount(1000110001);
             Optional<Customer> optionalCustomer = CustomerRepo.getCustomers().values().stream().findFirst();
