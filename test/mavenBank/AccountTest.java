@@ -33,6 +33,6 @@ public class AccountTest {
         joshua.getAccounts().add(joshuaAccount);
 
         assertTrue(joshua.getAccounts().contains(joshuaAccount));
-        assertTrue(CustomerRepo.getCustomers().isEmpty());
+        assertFalse(CustomerRepo.getCustomers().isEmpty());
     }
 }

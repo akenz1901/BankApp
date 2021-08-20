@@ -1,9 +1,6 @@
 package mavenBank.DataStore.services;
 
-import Entities.Account;
-import Entities.CurrentAccount;
-import Entities.Customer;
-import Entities.LoanRequest;
+import Entities.*;
 import mavenBank.DataStore.CustomerRepo;
 import mavenBank.DataStore.LoanRequestStatus;
 import mavenBank.DataStore.LoanType;
@@ -23,13 +20,11 @@ class LoanServiceImplTest {
     LoanRequest joshuaLoanRequest;
     private AccountService accountService;
     private LoanService loanService;
-    CurrentAccount abeebCurrent;
 
     @BeforeEach
     void setUp() {
         loanService = new LoanServiceImpl();
         accountService = new AccountServiceImpl();
-        abeebCurrent = new CurrentAccount();
 
         joshuaLoanRequest = new LoanRequest();
         joshuaLoanRequest.setApplyDate(LocalDate.now());
@@ -67,9 +62,13 @@ class LoanServiceImplTest {
         assertThrows(MavenBankLoanException.class, ()-> loanService.approveLoanRequest(null));
     }
     @Test
-    void approveLoanRequestWithNullLoan(){
-
-        assertThrows(MavenBankLoanException.class, ()->loanService.approveLoanRequest(abeebCurrent));
+    void approveLoanRequestWithNullLoanRequest(){
+        CurrentAccount currentAccountWithoutLoanRequest = new CurrentAccount();
+        assertThrows(MavenBankLoanException.class, ()->loanService.approveLoanRequest(currentAccountWithoutLoanRequest));
+    }
+    @Test
+    void approveLoanRequestWithNullCustomer(){
+        assertThrows(MavenBankLoanException.class, ()-> loanService.approveLoanRequest(null, new SavingsAccount()));
     }
     @Test
     void approveLoanRequestWithCustomerEngagement(){
@@ -113,5 +112,9 @@ class LoanServiceImplTest {
         }catch (MavenBankException ex){
             ex.printStackTrace();
         }
+    }
+    @Test
+    void approveLoanRequestWithCustomerButWithoutAccount(){
+        assertThrows(MavenBankLoanException.class, ()-> loanService.approveLoanRequest(new Customer(), null));
     }
 }

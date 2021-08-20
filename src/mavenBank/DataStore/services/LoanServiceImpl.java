@@ -12,19 +12,29 @@ public class LoanServiceImpl implements LoanService{
 
     @Override
     public LoanRequest approveLoanRequest(Account accountSeekingLoan)throws MavenBankLoanException {
-        if(accountSeekingLoan == null){
-            throw new MavenBankLoanException("An account is required for processing");
-        }if(accountSeekingLoan.getAccountLoanRequest() == null){
-            throw new MavenBankLoanException("No Loan provided for processing");
-        }
+        validateLoanRequest(accountSeekingLoan);
         LoanRequest theLoanRequest = accountSeekingLoan.getAccountLoanRequest();
         theLoanRequest.setStatus(decideOnLoanRequest(accountSeekingLoan));
 
         return theLoanRequest;
     }
+    public void validateLoanRequest(Customer customer, Account accountSeekingLoan)throws MavenBankLoanException{
+        if (customer == null){
+            throw new MavenBankLoanException("No Customer provided for loan request");
+        }
+       validateLoanRequest(accountSeekingLoan);
+    }
+    public void validateLoanRequest(Account accountSeekingLoan)throws MavenBankLoanException{
+        if(accountSeekingLoan == null){
+            throw new MavenBankLoanException("An account is required for processing");
+        }if(accountSeekingLoan.getAccountLoanRequest() == null){
+            throw new MavenBankLoanException("No Loan provided for processing");
+        }
+    }
 
     @Override
     public LoanRequest approveLoanRequest(Customer customer, Account accountSeekingForLoan) throws MavenBankLoanException {
+        this.validateLoanRequest(customer, accountSeekingForLoan);
         LoanRequestStatus decision = decideOnLoanRequestWithCustomerBalance(customer, accountSeekingForLoan);
         LoanRequest theLoanRequest = accountSeekingForLoan.getAccountLoanRequest();
         theLoanRequest.setStatus(decision);
