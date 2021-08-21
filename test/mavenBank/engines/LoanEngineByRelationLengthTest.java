@@ -9,6 +9,7 @@ import mavenBank.DataStore.LoanRequestStatus;
 import mavenBank.DataStore.LoanType;
 import mavenBank.DataStore.services.AccountService;
 import mavenBank.DataStore.services.AccountServiceImpl;
+import mavenBank.Exceptions.MavenBankDateException;
 import mavenBank.Exceptions.MavenBankException;
 import mavenBank.Exceptions.MavenBankLoanException;
 import org.junit.jupiter.api.AfterEach;
@@ -48,23 +49,98 @@ class LoanEngineByRelationLengthTest {
     @AfterEach
     void tearDown() {
     }
+
     @Test
-    void approveLoanRequestWithNullCustomer(){
-        assertThrows(MavenBankLoanException.class, ()-> loanEngine.calculateAmountAutoApprove(null, new SavingsAccount()));
+    void approveLoanRequestWithNullCustomer() {
+        assertThrows(MavenBankLoanException.class, () -> loanEngine.calculateAmountAutoApprove(null, new SavingsAccount()));
     }
+
     @Test
-    void approveLoanRequestWithNullAccount(){
-        assertThrows(MavenBankLoanException.class, ()-> loanEngine.calculateAmountAutoApprove(joshua, null));
+    void approveLoanRequestWithNullAccount() {
+        assertThrows(MavenBankLoanException.class, () -> loanEngine.calculateAmountAutoApprove(joshua, null));
     }
+
     @Test
-    void calculateAmountAutoApprove(){
+    void calculateAmountAutoApproveForCustomerRelationShipLengthTwoMonths() {
         try {
             Account joshuaCurrentAccount = accountService.findAccount(1000110002);
             joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
-            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(24));
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(2));
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(0, amountApproved.intValue());
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void calculateAmountAutoApproveForCustomerRelationShipLengthThreeToFiveMonths() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(3));
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(1009000, amountApproved.intValue());
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void calculateAmountAutoApproveForCustomerRelationShipLengthOfSixToElevenMonths() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(11));
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(2018000, amountApproved.intValue());
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void calculateAmountAutoApproveForCustomerRelationShipLengthOfTwelveToSeventeenMonth() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(17));
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(3027000, amountApproved.intValue());
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void calculateAmountAutoApproveForCustomerRelationShipLengthOfEighteenToTwentyThreeMonth() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(21));
+            BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
+            assertEquals(4036000, amountApproved.intValue());
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void calculateAmountAutoApproveForCustomerRelationShipLengthOfTwentyFourMonthAbove() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(100));
             BigDecimal amountApproved = loanEngine.calculateAmountAutoApprove(joshua, joshuaCurrentAccount);
             assertEquals(5045000, amountApproved.intValue());
-        }catch (MavenBankException e){
+        } catch (MavenBankException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    void calculateAmountAutoApproveThrowsAnExceptionIfNegativeMonthValueIsEntered() {
+        try {
+            Account joshuaCurrentAccount = accountService.findAccount(1000110002);
+            joshuaCurrentAccount.setAccountLoanRequest(joshuaLoanRequest);
+            assertThrows(MavenBankDateException.class, ()-> joshua.setRelationshipStartDate(LocalDateTime.now().minusMonths(-173)));
+        } catch (MavenBankException e) {
             e.printStackTrace();
         }
     }

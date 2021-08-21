@@ -2,6 +2,7 @@ package mavenBank.engines;
 
 import Entities.Account;
 import Entities.Customer;
+import mavenBank.Exceptions.MavenBankException;
 import mavenBank.Exceptions.MavenBankLoanException;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.time.temporal.ChronoUnit;
 
 public class LoanEngineByRelationLength implements LoanEngine{
     @Override
-    public BigDecimal calculateAmountAutoApprove(Customer customer, Account accountSeekingLoan) throws MavenBankLoanException {
+    public BigDecimal calculateAmountAutoApprove(Customer customer, Account accountSeekingLoan) throws MavenBankException {
         validateLoanRequest(customer, accountSeekingLoan);
 
         //calculate loan amount
@@ -22,7 +23,6 @@ public class LoanEngineByRelationLength implements LoanEngine{
         BigDecimal twentyFourMonthPercentage = BigDecimal.valueOf(0.1);
 
         long period = ChronoUnit.MONTHS.between(customer.getRelationshipStartDate(), LocalDateTime.now());
-
         BigDecimal totalCustomerBalance = BigDecimal.ZERO;
         if (customer.getAccounts().size() > BigDecimal.ONE.intValue()) {
             for (Account customerAccount : customer.getAccounts()) {

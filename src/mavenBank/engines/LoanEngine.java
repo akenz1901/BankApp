@@ -2,13 +2,14 @@ package mavenBank.engines;
 
 import Entities.Account;
 import Entities.Customer;
+import mavenBank.Exceptions.MavenBankException;
 import mavenBank.Exceptions.MavenBankLoanException;
 
 import java.math.BigDecimal;
 
 public interface LoanEngine {
 
-    BigDecimal calculateAmountAutoApprove(Customer customer, Account accountSeekingLoan) throws MavenBankLoanException;
+    BigDecimal calculateAmountAutoApprove(Customer customer, Account accountSeekingLoan) throws MavenBankException;
 
     default void validateLoanRequest(Customer customer, Account accountSeekingLoan) throws MavenBankLoanException {
         if (customer == null) {
