@@ -1,6 +1,11 @@
 package Entities;
 
+import mavenBank.Exceptions.MavenBankDateException;
+import mavenBank.Exceptions.MavenBankException;
+
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +27,14 @@ public class Customer {
         return relationshipStartDate;
     }
 
-    public void setRelationshipStartDate(LocalDateTime relationshipStartDate) {
+    public void setRelationshipStartDate(LocalDateTime relationshipStartDate){
+            validateRelationStartDate(relationshipStartDate);
         this.relationshipStartDate = relationshipStartDate;
+    }
+    private void validateRelationStartDate(LocalDateTime relationshipStartDate) throws MavenBankDateException {
+        if (ChronoUnit.MONTHS.between(relationshipStartDate, LocalDateTime.now()) < 0){
+            throw new MavenBankDateException("Enter a Valid Month value");
+        }
     }
 
     private void setAccounts(ArrayList<Account> accounts) {
